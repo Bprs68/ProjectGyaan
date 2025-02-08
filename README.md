@@ -1,4 +1,5 @@
 # Project Gyaan
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Project Gyaan is an intelligent article curator that automatically discovers, evaluates, and delivers high-quality, thought-provoking content straight to your inbox. The name "Gyaan" comes from the Sanskrit word for "knowledge" or "wisdom", reflecting the project's goal of surfacing truly insightful content from across the internet.
 
@@ -104,21 +105,6 @@ Key parameters can be adjusted in the code:
 - Runs locally only (no GitHub Actions deployment yet)
 - Some paywalled content may be inaccessible
 - Rate limits on various APIs may affect processing time
-
-## Contributing
-
-Feel free to:
-- Open issues for bugs or suggestions
-- Submit pull requests with improvements
-- Add support for new content sources
-- Improve evaluation criteria
-
-
-## Current Limitations
-
-- Runs locally only (no GitHub Actions deployment yet)
-- Some paywalled content may be inaccessible
-- Rate limits on various APIs may affect processing time
 - No filtering by topics/categories
 - Processes and sends all articles that meet quality threshold
 - Gemini API costs may increase with more articles (Use 2.0 flash for free use for now)
@@ -156,7 +142,6 @@ Feel free to:
 - Add option for different languages
 - Implement user feedback system for improving article selection
 
-
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [https://choosealicense.com/licenses/mit/](LICENSE) file for details.
