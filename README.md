@@ -144,4 +144,4 @@ Key parameters can be adjusted in the code:
 
 ## License
 
-This project is licensed under the MIT License - see the [https://choosealicense.com/licenses/mit/](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://choosealicense.com/licenses/mit/) file for details.
