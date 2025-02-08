@@ -113,13 +113,49 @@ Feel free to:
 - Add support for new content sources
 - Improve evaluation criteria
 
-## Future Plans
+
+## Current Limitations
+
+- Runs locally only (no GitHub Actions deployment yet)
+- Some paywalled content may be inaccessible
+- Rate limits on various APIs may affect processing time
+- No filtering by topics/categories
+- Processes and sends all articles that meet quality threshold
+- Gemini API costs may increase with more articles (Use 2.0 flash for free use for now)
+- Some websites block content extraction
+- Limited error recovery for API failures
+- No user interface for customization
+- RSS feeds might break if source websites change their structure
+- Memory intensive for large number of articles
+
+## Future Enhancements
 
 - Add GitHub Actions for automated weekly runs
 - Implement content archiving
-- Add more sophisticated filtering
 - Create web interface for browsing articles
 - Add support for more content sources
+
+- **Top Articles Only**: Limit digest to top 10 most impactful articles to maintain focus and readability
+
+- **Topic Selection**: 
+  - Allow users to select preferred topics (AI, Philosophy, Economics, etc.)
+  - Set topic weights for article scoring
+  - Create topic-specific digests
+  - Add/remove sources per topic
+
+- **Customization Options**:
+  - Adjust quality thresholds
+  - Set preferred article length
+  - Choose digest frequency (weekly/daily)
+  - Customize email format
+  - Set reading time preferences
+- Add better error handling and recovery
+- Implement content summarization
+- Add support for academic paper repositories
+- Create article recommendation system based on reading history
+- Add option for different languages
+- Implement user feedback system for improving article selection
+
 
 ## License
 
