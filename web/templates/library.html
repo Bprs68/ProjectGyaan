@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %} — Article Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-label">ARCHIVE</div>
+    <h1 class="page-title">Article Library</h1>
+    <p class="page-subtitle">{{ total }} articles collected · Browse, filter, and review.</p>
+  </div>
+</div>
+
+<form class="filter-bar" method="get" action="/library">
+  <input type="text" name="search" placeholder="Search titles…" value="{{ search }}" class="filter-search">
+
+  <select name="topic" class="filter-select" onchange="this.form.submit()">
+    <option value="">All Topics</option>
+    {% for t in topics %}
+    <option value="{{ t.name }}" {% if selected_topic == t.name %}selected{% endif %}>{{ t.name }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="status" class="filter-select" onchange="this.form.submit()">
+    <option value="">All Statuses</option>
+    <option value="evaluated" {% if selected_status == 'evaluated' %}selected{% endif %}>Evaluated</option>
+    <option value="digest" {% if selected_status == 'digest' %}selected{% endif %}>In Digest</option>
+    <option value="skipped" {% if selected_status == 'skipped' %}selected{% endif %}>Skipped</option>
+    <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+  </select>
+
+  <button type="submit" class="btn-outline">Filter</button>
+  {% if search or selected_topic or selected_status %}
+  <a href="/library" class="btn-ghost">Clear</a>
+  {% endif %}
+</form>
+
+<div class="library-table">
+  <div class="table-header">
+    <span>Article</span>
+    <span>Topic</span>
+    <span>Score</span>
+    <span>Type</span>
+    <span>Status</span>
+    <span>Collected</span>
+  </div>
+
+  {% for article in articles %}
+  {% set ev = article.evaluation %}
+  <div class="table-row">
+    <div class="table-title">
+      <a href="{{ article.url }}" target="_blank" rel="noopener">{{ article.title }}</a>
+      <span class="table-source">{{ article.source or '' }}</span>
+    </div>
+    <div class="table-topic">{{ article.topic.name if article.topic else '—' }}</div>
+    <div class="table-score {% if ev and ev.score_pct >= 80 %}score-high{% elif ev and ev.score_pct >= 60 %}score-mid{% endif %}">
+      {{ ev.score_pct ~ '%' if ev else '—' }}
+    </div>
+    <div>
+      {% if ev %}
+      <span class="tag tag-{{ ev.article_type|lower }}">{{ ev.article_type }}</span>
+      {% else %}—{% endif %}
+    </div>
+    <div class="status-badge status-{{ article.status }}">{{ article.status }}</div>
+    <div class="table-date">{{ article.collected_at.strftime('%b %d') }}</div>
+  </div>
+  {% else %}
+  <div class="empty-row">No articles found.</div>
+  {% endfor %}
+</div>
+
+{% if pages > 1 %}
+<div class="pagination">
+  {% if page > 1 %}
+  <a href="?page={{ page - 1 }}&topic={{ selected_topic or '' }}&status={{ selected_status or '' }}&search={{ search }}" class="page-btn">← Prev</a>
+  {% endif %}
+  <span class="page-info">Page {{ page }} of {{ pages }}</span>
+  {% if page < pages %}
+  <a href="?page={{ page + 1 }}&topic={{ selected_topic or '' }}&status={{ selected_status or '' }}&search={{ search }}" class="page-btn">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
