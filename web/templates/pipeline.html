@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %} — Pipeline{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-label">AUTOMATION</div>
+    <h1 class="page-title">Pipeline</h1>
+    <p class="page-subtitle">Daily collection runs at 08:00 · Weekly digest sends every Sunday at 20:00</p>
+  </div>
+  <div class="page-actions pipeline-actions">
+    <form action="/api/pipeline/run" method="post" style="display:inline;">
+      <input type="hidden" name="run_type" value="daily">
+      <button type="submit" class="btn-primary" {% if stats.pipeline_running %}disabled{% endif %}>
+        ▶ Run Daily Now
+      </button>
+    </form>
+    <form action="/api/pipeline/run" method="post" style="display:inline;">
+      <input type="hidden" name="run_type" value="weekly">
+      <button type="submit" class="btn-outline" {% if stats.pipeline_running %}disabled{% endif %}>
+        ⊠ Send Weekly Digest
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if stats.pipeline_running %}
+<div class="pipeline-running-banner">
+  <span class="dot dot-running"></span>
+  Pipeline is currently running…
+  <span id="live-status"></span>
+</div>
+{% endif %}
+
+<div class="section-label">Recent Runs</div>
+
+<div class="runs-table">
+  <div class="runs-header">
+    <span>Type</span>
+    <span>Started</span>
+    <span>Duration</span>
+    <span>Found</span>
+    <span>Evaluated</span>
+    <span>Stored</span>
+    <span>Status</span>
+  </div>
+
+  {% for run in runs %}
+  {% set duration = '' %}
+  {% if run.completed_at and run.started_at %}
+    {% set secs = (run.completed_at - run.started_at).seconds %}
+    {% if secs < 60 %}{% set duration = secs|string ~ 's' %}
+    {% else %}{% set duration = (secs // 60)|string ~ 'm ' ~ (secs % 60)|string ~ 's' %}{% endif %}
+  {% endif %}
+  <div class="runs-row">
+    <div><span class="run-type run-type-{{ run.run_type }}">{{ run.run_type }}</span></div>
+    <div class="runs-date">{{ run.started_at.strftime('%b %d %H:%M') if run.started_at else '—' }}</div>
+    <div class="runs-duration">{{ duration or '—' }}</div>
+    <div>{{ run.articles_found }}</div>
+    <div>{{ run.articles_evaluated }}</div>
+    <div>{{ run.articles_stored }}</div>
+    <div><span class="run-status run-status-{{ run.status }}">{{ run.status }}</span></div>
+  </div>
+  {% if run.error_log %}
+  <div class="run-error">{{ run.error_log[:200] }}{% if run.error_log|length > 200 %}…{% endif %}</div>
+  {% endif %}
+  {% else %}
+  <div class="empty-row">No pipeline runs yet. Run the daily pipeline to start collecting.</div>
+  {% endfor %}
+</div>
+
+<script>
+{% if stats.pipeline_running %}
+// Poll for live status updates while pipeline is running
+function pollStatus() {
+  fetch('/api/pipeline/status')
+    .then(r => r.json())
+    .then(data => {
+      const el = document.getElementById('live-status');
+      if (el) {
+        el.textContent = ` · Found: ${data.articles_found} · Evaluated: ${data.articles_evaluated} · Stored: ${data.articles_stored}`;
+      }
+      if (data.status === 'running') {
+        setTimeout(pollStatus, 3000);
+      } else {
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+}
+setTimeout(pollStatus, 3000);
+{% endif %}
+</script>
+{% endblock %}

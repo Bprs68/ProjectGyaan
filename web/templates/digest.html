@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %} — Weekly Digest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-label">WEEKLY DIGEST</div>
+    <h1 class="page-title">{{ week_label }}</h1>
+    <p class="page-subtitle">
+      {{ stats.articles_this_week }} collected this week &nbsp;·&nbsp;
+      {{ stats.digest_count }} passed evaluation &nbsp;·&nbsp;
+      {{ articles|length }} selected for digest
+    </p>
+  </div>
+  <div class="page-actions">
+    <a href="/digest/preview" target="_blank" class="btn-outline">⊠ Preview Email</a>
+  </div>
+</div>
+
+{% if week_summary %}
+<div class="week-review">
+  <div class="week-review-label">WEEK IN REVIEW</div>
+  <p class="week-review-body">{{ week_summary }}</p>
+</div>
+{% endif %}
+
+{% if not articles %}
+<div class="empty-state">
+  <p>No articles collected yet this week.</p>
+  <form action="/api/pipeline/run" method="post" style="margin-top:16px;">
+    <input type="hidden" name="run_type" value="daily">
+    <button type="submit" class="btn-primary">Run Daily Pipeline Now</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="article-list">
+{% for article in articles %}
+{% set ev = article.evaluation %}
+{% set fb = feedback_map.get(article.id, {}) %}
+{% set article_type = (ev.article_type if ev else 'ANALYSIS')|upper %}
+<div class="article-card {% if fb.rating == 'liked' %}card-liked{% elif fb.rating == 'disliked' %}card-disliked{% endif %}" id="article-{{ article.id }}">
+  <div class="article-num">{{ "%02d"|format(loop.index) }}</div>
+
+  <div class="article-body">
+    <div class="article-meta">
+      <span class="tag tag-{{ article_type|lower }}">{{ article_type }}</span>
+      <span class="meta-topic">{{ article.topic.name if article.topic else 'General' }}</span>
+      <span class="meta-sep">·</span>
+      <span class="meta-source">{{ article.source or 'Unknown' }}</span>
+      <span class="meta-right">
+        <span class="meta-time">⏱ {{ ev.reading_time_mins if ev else '?' }} min</span>
+        <span class="meta-score">{{ ev.score_pct if ev else 0 }}%</span>
+      </span>
+    </div>
+
+    <h2 class="article-title">
+      <a href="{{ article.url }}" target="_blank" rel="noopener">{{ article.title }}</a>
+    </h2>
+
+    {% if ev and ev.summary %}
+    <p class="article-summary">{{ ev.summary }}</p>
+    {% endif %}
+
+    {% if ev and ev.key_insights %}
+    <ul class="insights">
+      {% for insight in ev.key_insights[:3] %}
+      <li>{{ insight }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="article-footer">
+      <div class="feedback-row" data-id="{{ article.id }}">
+        <button class="btn-feedback btn-like {% if fb.rating == 'liked' %}active{% endif %}"
+                onclick="submitFeedback({{ article.id }}, 'liked', this)">
+          👍
+        </button>
+        <button class="btn-feedback btn-dislike {% if fb.rating == 'disliked' %}active{% endif %}"
+                onclick="submitFeedback({{ article.id }}, 'disliked', this)">
+          👎
+        </button>
+        <button class="btn-note-toggle" onclick="toggleNote({{ article.id }})">+ note</button>
+        {% if fb.note %}
+        <span class="saved-note">"{{ fb.note }}"</span>
+        {% endif %}
+      </div>
+      <div class="note-form" id="note-{{ article.id }}" style="display:none;">
+        <input type="text" class="note-input" id="note-input-{{ article.id }}"
+               placeholder="What did you think?" value="{{ fb.note or '' }}">
+        <button onclick="submitNote({{ article.id }})">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

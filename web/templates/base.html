@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Gyaan{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">Project <span class="gold">Gyaan</span></div>
+      <div class="brand-tagline">INTELLIGENCE DIGEST</div>
+    </div>
+
+    <nav class="nav">
+      <a href="/digest" class="nav-item {% if active == 'digest' %}active{% endif %}">
+        <span class="nav-icon">▣</span> Weekly Digest
+      </a>
+      <a href="/topics" class="nav-item {% if active == 'topics' %}active{% endif %}">
+        <span class="nav-icon">◉</span> My Topics
+      </a>
+      <a href="/library" class="nav-item {% if active == 'library' %}active{% endif %}">
+        <span class="nav-icon">☰</span> Article Library
+      </a>
+      <a href="/pipeline" class="nav-item {% if active == 'pipeline' %}active{% endif %}">
+        <span class="nav-icon">◈</span> Pipeline
+        {% if stats.pipeline_running %}
+        <span class="badge-running">●</span>
+        {% endif %}
+      </a>
+      <a href="/schema" class="nav-item {% if active == 'schema' %}active{% endif %}">
+        <span class="nav-icon">⊞</span> DB Schema
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="status-row">
+        <span class="dot {% if stats.pipeline_running %}dot-running{% endif %}"></span>
+        <div class="status-text">
+          {% if stats.pipeline_running %}
+            <span class="gold">Pipeline running…</span>
+          {% else %}
+            Last run: {{ stats.last_run }}
+          {% endif %}
+          <br>Next digest: {{ stats.next_email }}
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Top status bar -->
+    <header class="topbar">
+      <span class="topbar-left">
+        <span class="gold">★</span>
+        {{ stats.articles_this_week }} articles collected this week
+        &nbsp;·&nbsp;
+        {{ stats.digest_count }} selected for digest
+        &nbsp;·&nbsp;
+        Next email: {{ stats.next_email }}
+      </span>
+      <span class="topbar-right">
+        <span class="liked-count">{{ stats.liked }} liked</span>
+        &nbsp;·&nbsp;
+        <span class="disliked-count">{{ stats.disliked }} disliked</span>
+      </span>
+    </header>
+
+    <!-- Page content -->
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

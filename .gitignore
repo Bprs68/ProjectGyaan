@@ -1,1 +1,43 @@
+# Environment
 .env
+.env.*
+
+# Virtual environments
+gyaan/
+venv/
+.venv/
+env/
+
+# uv cache (not the lockfile — uv.lock should be committed)
+.uv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Logs
+*.log
+
+# Database
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

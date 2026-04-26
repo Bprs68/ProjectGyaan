@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %} — My Topics{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-label">CONFIGURATION</div>
+    <h1 class="page-title">My Topics</h1>
+    <p class="page-subtitle">Adjust topic weights and search queries to shape what Gyaan collects each day.</p>
+  </div>
+</div>
+
+<div class="topics-grid">
+{% for topic in topics %}
+<div class="topic-card {% if not topic.active %}topic-inactive{% endif %}">
+  <div class="topic-header">
+    <div>
+      <div class="topic-name">{{ topic.name }}</div>
+      <div class="topic-meta">{{ topic_counts.get(topic.id, 0) }} articles collected</div>
+    </div>
+    <div class="topic-controls">
+      <label class="toggle">
+        <input type="checkbox" {% if topic.active %}checked{% endif %}
+               onchange="toggleTopic({{ topic.id }}, this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="topic-desc">{{ topic.description or '' }}</div>
+
+  <div class="weight-row">
+    <span class="weight-label">Weight</span>
+    <input type="range" min="0.1" max="3.0" step="0.1"
+           value="{{ topic.weight }}"
+           class="weight-slider"
+           oninput="this.nextElementSibling.textContent = parseFloat(this.value).toFixed(1)"
+           onchange="updateWeight({{ topic.id }}, this.value)">
+    <span class="weight-value">{{ "%.1f"|format(topic.weight) }}</span>
+  </div>
+
+  <div class="queries-section">
+    <div class="queries-label">Search Queries</div>
+    <textarea class="queries-input" id="queries-{{ topic.id }}" rows="4">{{ (topic.search_queries or []) | join('\n') }}</textarea>
+    <button class="btn-save-queries" onclick="saveQueries({{ topic.id }})">Save Queries</button>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %} — DB Schema{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-label">DATABASE</div>
+    <h1 class="page-title">Schema</h1>
+    <p class="page-subtitle">SQLite · gyaan.db · 6 tables</p>
+  </div>
+</div>
+
+<div class="schema-grid">
+
+  <div class="schema-table">
+    <div class="schema-table-header">
+      <span class="schema-table-name">topics</span>
+      <span class="schema-row-count">{{ counts.topics }} rows</span>
+    </div>
+    <div class="schema-cols">
+      <div class="schema-col"><span class="col-pk">PK</span> id</div>
+      <div class="schema-col">name <span class="col-type">TEXT UNIQUE</span></div>
+      <div class="schema-col">weight <span class="col-type">FLOAT</span></div>
+      <div class="schema-col">active <span class="col-type">BOOL</span></div>
+      <div class="schema-col">search_queries <span class="col-type">JSON</span></div>
+      <div class="schema-col">description <span class="col-type">TEXT</span></div>
+      <div class="schema-col">created_at <span class="col-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <div class="schema-table schema-table-primary">
+    <div class="schema-table-header">
+      <span class="schema-table-name">articles</span>
+      <span class="schema-row-count">{{ counts.articles }} rows</span>
+    </div>
+    <div class="schema-cols">
+      <div class="schema-col"><span class="col-pk">PK</span> id</div>
+      <div class="schema-col">title <span class="col-type">TEXT</span></div>
+      <div class="schema-col">url <span class="col-type">TEXT UNIQUE</span></div>
+      <div class="schema-col">source <span class="col-type">TEXT</span></div>
+      <div class="schema-col"><span class="col-fk">FK</span> topic_id → topics.id</div>
+      <div class="schema-col">content_snippet <span class="col-type">TEXT</span></div>
+      <div class="schema-col">collected_at <span class="col-type">DATETIME</span></div>
+      <div class="schema-col">status <span class="col-type">pending|evaluated|digest|skipped</span></div>
+    </div>
+  </div>
+
+  <div class="schema-table">
+    <div class="schema-table-header">
+      <span class="schema-table-name">evaluations</span>
+      <span class="schema-row-count">{{ counts.evaluations }} rows</span>
+    </div>
+    <div class="schema-cols">
+      <div class="schema-col"><span class="col-pk">PK</span> id</div>
+      <div class="schema-col"><span class="col-fk">FK</span> article_id → articles.id</div>
+      <div class="schema-col">impact_score <span class="col-type">FLOAT 1–10</span></div>
+      <div class="schema-col">originality_score <span class="col-type">FLOAT 1–10</span></div>
+      <div class="schema-col">depth_score <span class="col-type">FLOAT 1–10</span></div>
+      <div class="schema-col">combined_score <span class="col-type">FLOAT</span></div>
+      <div class="schema-col">score_pct <span class="col-type">INT 0–100</span></div>
+      <div class="schema-col">key_insights <span class="col-type">JSON[]</span></div>
+      <div class="schema-col">reading_time_mins <span class="col-type">INT</span></div>
+      <div class="schema-col">worth_reading <span class="col-type">BOOL</span></div>
+      <div class="schema-col">article_type <span class="col-type">DEEP|FEATURE|ANALYSIS…</span></div>
+      <div class="schema-col">summary <span class="col-type">TEXT</span></div>
+      <div class="schema-col">model_used <span class="col-type">TEXT</span></div>
+      <div class="schema-col">evaluated_at <span class="col-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <div class="schema-table">
+    <div class="schema-table-header">
+      <span class="schema-table-name">feedback</span>
+      <span class="schema-row-count">{{ counts.feedback }} rows</span>
+    </div>
+    <div class="schema-cols">
+      <div class="schema-col"><span class="col-pk">PK</span> id</div>
+      <div class="schema-col"><span class="col-fk">FK</span> article_id → articles.id</div>
+      <div class="schema-col">rating <span class="col-type">liked|disliked|neutral</span></div>
+      <div class="schema-col">note <span class="col-type">TEXT nullable</span></div>
+      <div class="schema-col">created_at <span class="col-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <div class="schema-table">
+    <div class="schema-table-header">
+      <span class="schema-table-name">digests</span>
+      <span class="schema-row-count">{{ counts.digests }} rows</span>
+    </div>
+    <div class="schema-cols">
+      <div class="schema-col"><span class="col-pk">PK</span> id</div>
+      <div class="schema-col">week_start <span class="col-type">DATETIME</span></div>
+      <div class="schema-col">week_end <span class="col-type">DATETIME</span></div>
+      <div class="schema-col">sent_at <span class="col-type">DATETIME nullable</span></div>
+      <div class="schema-col">article_ids <span class="col-type">JSON[]</span></div>
+    </div>
+  </div>
+
+  <div class="schema-table">
+    <div class="schema-table-header">
+      <span class="schema-table-name">pipeline_runs</span>
+      <span class="schema-row-count">{{ counts.pipeline_runs }} rows</span>
+    </div>
+    <div class="schema-cols">
+      <div class="schema-col"><span class="col-pk">PK</span> id</div>
+      <div class="schema-col">run_type <span class="col-type">daily|weekly|manual</span></div>
+      <div class="schema-col">started_at <span class="col-type">DATETIME</span></div>
+      <div class="schema-col">completed_at <span class="col-type">DATETIME nullable</span></div>
+      <div class="schema-col">status <span class="col-type">running|success|failed</span></div>
+      <div class="schema-col">articles_found <span class="col-type">INT</span></div>
+      <div class="schema-col">articles_evaluated <span class="col-type">INT</span></div>
+      <div class="schema-col">articles_stored <span class="col-type">INT</span></div>
+      <div class="schema-col">error_log <span class="col-type">TEXT nullable</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="schema-relations">
+  <div class="section-label" style="margin-top:32px;">Relationships</div>
+  <div class="relations-list">
+    <div class="relation">topics <span class="arrow">──▶</span> articles <span class="rel-note">(one topic → many articles)</span></div>
+    <div class="relation">articles <span class="arrow">──▶</span> evaluations <span class="rel-note">(one-to-one, cascade delete)</span></div>
+    <div class="relation">articles <span class="arrow">──▶</span> feedback <span class="rel-note">(one article → many feedback rows)</span></div>
+    <div class="relation">digests <span class="arrow">──▶</span> articles <span class="rel-note">(via article_ids JSON array)</span></div>
+  </div>
+</div>
+{% endblock %}
